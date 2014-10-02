@@ -2,142 +2,46 @@
 
 import colorsys
 import random
+import yaml
 
 
 class RandomColor(object):
 
     def __init__(self):
-        # Shared color dictionary
-        self.colorDictionary = {}
-        # Populate the color dictionary
-        self.load_color_bounds()
+        # Load color dictionary and populate the color dictionary
+        self.colormap = yaml.load(open('lib/colormap.yaml'))
 
-    def generate(self, options={}):
-        # Check if we need to generate multiple colors
-        if "count" in options:
-            count = options["count"]
-        else:
-            count = 1
+        for color_name, color_attrs in self.colormap.items():
+            lower_bounds = color_attrs['lower_bounds']
+            sMin = lower_bounds[0][0]
+            sMax = lower_bounds[len(lower_bounds) - 1][0]
 
+            bMin = lower_bounds[len(lower_bounds) - 1][1]
+            bMax = lower_bounds[0][1]
+
+            self.colormap[color_name]['saturation_range'] = [sMin, sMax]
+            self.colormap[color_name]['brightness_range'] = [bMin, bMax]
+
+    def generate(self, hue=None, luminosity=None, count=1, format_='hex'):
         colors = []
         for _ in range(count):
             # First we pick a hue (H)
-            H = self.pick_hue(options.get("hue", None))
+            H = self.pick_hue(hue)
 
             # Then use H to determine saturation (S)
-            S = self.pick_saturation(H, options)
+            S = self.pick_saturation(H, hue, luminosity)
 
             # Then use S and H to determine brightness (B).
-            B = self.pick_brightness(H, S, options)
+            B = self.pick_brightness(H, S, luminosity)
 
             # Then we return the HSB color in the desired format
-            colors.append(self.set_format([H, S, B], options))
+            colors.append(self.set_format([H, S, B], format_))
 
         return colors
 
-    def define_color(self, name, hueRange, lowerBounds):
-
-        sMin = lowerBounds[0][0]
-        sMax = lowerBounds[len(lowerBounds) - 1][0]
-
-        bMin = lowerBounds[len(lowerBounds) - 1][1]
-        bMax = lowerBounds[0][1]
-
-        self.colorDictionary[name] = {
-            'hueRange': hueRange,
-            'lowerBounds': lowerBounds,
-            'saturationRange': [sMin, sMax],
-            'brightnessRange': [bMin, bMax]
-        }
-
-    def load_color_bounds(self):
-
-        self.define_color('monochrome', None, [
-            [0, 0],
-            [100, 0]
-        ])
-
-        self.define_color('red', [-26, 18], [
-            [20, 100],
-            [30, 92],
-            [40, 89],
-            [50, 85],
-            [60, 78],
-            [70, 70],
-            [80, 60],
-            [90, 55],
-            [100, 50]
-        ])
-
-        self.define_color('orange', [19, 46], [
-            [20, 100],
-            [30, 93],
-            [40, 88],
-            [50, 86],
-            [60, 85],
-            [70, 70],
-            [100, 70]
-        ])
-
-        self.define_color('yellow', [47, 62], [
-            [25, 100],
-            [40, 94],
-            [50, 89],
-            [60, 86],
-            [70, 84],
-            [80, 82],
-            [90, 80],
-            [100, 75]
-        ])
-
-        self.define_color('green', [63, 178], [
-            [30, 100],
-            [40, 90],
-            [50, 85],
-            [60, 81],
-            [70, 74],
-            [80, 64],
-            [90, 50],
-            [100, 40]
-        ])
-
-        self.define_color('blue', [179, 257], [
-            [20, 100],
-            [30, 86],
-            [40, 80],
-            [50, 74],
-            [60, 60],
-            [70, 52],
-            [80, 44],
-            [90, 39],
-            [100, 35]
-        ])
-
-        self.define_color('purple', [258, 282], [
-            [20, 100],
-            [30, 87],
-            [40, 79],
-            [50, 70],
-            [60, 65],
-            [70, 59],
-            [80, 52],
-            [90, 45],
-            [100, 42]
-        ])
-
-        self.define_color('pink', [283, 334], [
-            [20, 100],
-            [30, 90],
-            [40, 86],
-            [60, 84],
-            [80, 80],
-            [90, 75],
-            [100, 73]
-        ])
-
     def pick_hue(self, hue):
-        hueRange = self.get_hue_range(hue)
-        hue = self.random_within(hueRange)
+        hue_range = self.get_hue_range(hue)
+        hue = self.random_within(hue_range)
 
         # Instead of storing red as two seperate ranges,
         # we group them, using negative numbers
@@ -146,66 +50,66 @@ class RandomColor(object):
 
         return hue
 
-    def pick_saturation(self, hue, options):
+    def pick_saturation(self, hue, hue_name, luminosity):
 
-        if 'luminocity' in options and options['luminosity'] == 'random':
+        if luminosity == 'random':
             return self.random_within([0, 100])
 
-        if options.get('hue') == 'monochrome':
+        if hue_name == 'monochrome':
             return 0
 
-        saturationRange = self.get_saturation_range(hue)
+        saturation_range = self.get_saturation_range(hue)
 
-        sMin = saturationRange[0]
-        sMax = saturationRange[1]
+        sMin = saturation_range[0]
+        sMax = saturation_range[1]
 
-        if 'luminocity' in options and options['luminosity'] == 'bright':
+        if luminosity == 'bright':
             sMin = 55
-        elif 'luminocity' in options and options['luminosity'] == 'dark':
+        elif luminosity == 'dark':
             sMin = sMax - 10
-        elif 'luminocity' in options and options['luminosity'] == 'light':
+        elif luminosity == 'light':
             sMax = 55
 
         return self.random_within([sMin, sMax])
 
-    def pick_brightness(self, H, S, options):
+    def pick_brightness(self, H, S, luminosity):
         bMin = self.get_minimum_brightness(H, S)
         bMax = 100
 
-        if 'luminocity' in options and options['luminosity'] == 'dark':
+        if luminosity == 'dark':
             bMax = bMin + 20
-        elif 'luminocity' in options and options['luminosity'] == 'light':
+        elif luminosity == 'light':
             bMin = (bMax + bMin) / 2
-        elif 'luminocity' in options and options['luminosity'] == 'random':
+        elif luminosity == 'random':
             bMin = 0
             bMax = 100
 
         return self.random_within([bMin, bMax])
 
-    def set_format(self, hsv, options):
+    def set_format(self, hsv, format_):
 
-            if 'format' in options and options['format'] == 'hsvArray':
+            if format_ == 'hsvArray':
                 return hsv
-            elif 'format' in options and options['format'] == 'hsv':
+            elif format_ == 'hsv':
                 return self.color_string('hsv', hsv)
-            elif 'format' in options and options['format'] == 'rgbArray':
-                return colorsys.hsv_to_rgb(hsv[0], hsv[1], hsv[2])
-            elif 'format' in options and options['format'] == 'rgb':
-                return self.color_string('rgb', colorsys.hsv_to_rgb(hsv[0], hsv[1], hsv[2]))
+            elif format_ == 'rgbArray':
+                return self.hsv_to_rgb(hsv)
+            elif format_ == 'rgb':
+                return self.color_string('rgb', self.hsv_to_rgb(hsv))
             else:
                 return self.hsv_to_hex(hsv)
 
     def get_minimum_brightness(self, H, S):
 
-        lowerBounds = self.get_color_info(H)['lowerBounds']
+        lower_bounds = self.get_color_info(H)['lower_bounds']
 
-        for i in range(len(lowerBounds)):
+        for i in range(len(lower_bounds)):
 
-            s1 = lowerBounds[i][0]
-            v1 = lowerBounds[i][1]
+            s1 = lower_bounds[i][0]
+            v1 = lower_bounds[i][1]
 
-            s2 = lowerBounds[i + 1][0]
-            v2 = lowerBounds[i + 1][1]
+            s2 = lower_bounds[i + 1][0]
+            v2 = lower_bounds[i + 1][1]
 
             if S >= s1 and S <= s2:
 
@@ -223,49 +127,55 @@ class RandomColor(object):
             if number < 360 and number > 0:
                 return [number, number]
 
-        elif color_input and color_input in self.colorDictionary:
-                color = self.colorDictionary[color_input]
-                if 'hueRange' in color:
-                    return color['hueRange']
+        elif color_input and color_input in self.colormap:
+                color = self.colormap[color_input]
+                if 'hue_range' in color:
+                    return color['hue_range']
 
         else:
           return [0, 360]
 
     def get_saturation_range(self, hue):
-        return self.get_color_info(hue)['saturationRange']
+        return self.get_color_info(hue)['saturation_range']
 
     def get_color_info(self, hue):
         # Maps red colors to make picking hue easier
         if hue >= 334 and hue <= 360:
             hue -= 360
 
-        for color_name, color in self.colorDictionary.items():
-            if color['hueRange'] and hue >= color['hueRange'][0] and \
-               hue <= color['hueRange'][1]:
-                return self.colorDictionary[color_name]
+        for color_name, color in self.colormap.items():
+            if color['hue_range'] and hue >= color['hue_range'][0] and \
+               hue <= color['hue_range'][1]:
+                return self.colormap[color_name]
 
+        # this should probably raise an exception
         return 'Color not found'
 
     @classmethod
     def random_within(cls, r):
-        return random.choice(range(r[0], r[1] + 1))
+        return random.randint(r[0], r[1])
 
     @classmethod
-    def hsv_to_hex(cls, hsv):
+    def hsv_to_rgb(cls, hsv):
         h, s, v = hsv
         if h == 0:
             h = 1
         if h == 360:
             h = 359
-        h = float(h)/360
 
+        h = float(h)/360
         s = float(s)/100
         v = float(v)/100
 
         rgb = colorsys.hsv_to_rgb(h, s, v)
-        r, g, b = [int(c * 255) for c in rgb]
+        return [int(c * 255) for c in rgb]
+
+    @classmethod
+    def hsv_to_hex(cls, hsv):
+        r, g, b = cls.hsv_to_rgb(hsv)
         return '#%02x%02x%02x' % (r, g, b)
 
     @classmethod
     def color_string(cls, prefix, values):
+        values = [str(x) for x in values]
         return "%s(%s)" % (prefix, ', '.join(values))
