@@ -87,18 +87,22 @@ class RandomColor(object):
         return self.random_within([bMin, bMax])
 
     def set_format(self, hsv, format_):
-        if format_ == 'hsvArray':
-            return hsv
-        elif format_ == 'hsv':
-            return self.color_string('hsv', hsv)
-        elif format_ == 'rgbArray':
-            return self.hsv_to_rgb(hsv)
-        elif format_ == 'rgb':
-            return self.color_string('rgb', self.hsv_to_rgb(hsv))
-        elif format_ == 'hex':
-            return self.hsv_to_hex(hsv)
+        if 'hsv' in format_:
+            color = hsv
+        elif 'rgb' in format_:
+            color = self.hsv_to_rgb(hsv)
+        elif 'hex' in format_:
+            r, g, b = self.hsv_to_rgb(hsv)
+            return '#%02x%02x%02x' % (r, g, b)
         else:
-                return self.hsv_to_hex(hsv)
+            return "unrecognized format"
+
+        if "Array" in format_ or format_ == 'hex':
+            return color
+        else:
+            prefix = format_[:3]
+            color_values = [str(x) for x in color]
+            return "%s(%s)" % (prefix, ', '.join(color_values))
 
     def get_minimum_brightness(self, H, S):
         lower_bounds = self.get_color_info(H)['lower_bounds']
@@ -168,13 +172,3 @@ class RandomColor(object):
 
         rgb = colorsys.hsv_to_rgb(h, s, v)
         return [int(c * 255) for c in rgb]
-
-    @classmethod
-    def hsv_to_hex(cls, hsv):
-        r, g, b = cls.hsv_to_rgb(hsv)
-        return '#%02x%02x%02x' % (r, g, b)
-
-    @classmethod
-    def color_string(cls, prefix, values):
-        values = [str(x) for x in values]
-        return "%s(%s)" % (prefix, ', '.join(values))
