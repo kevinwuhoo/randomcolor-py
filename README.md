@@ -8,14 +8,14 @@ Usage
 
 Generating a completly random color:
 ``` python
-import randomColor
+import randomcolor
 rand_color = randomcolor.RandomColor()
 print rand_color.generate()
 ```
 
 Generating 3 random blue colors:
 ``` python
-print rand_color.generate({'hue': 'blue', 'count': 3})
+print rand_color.generate(hue="blue", count=3)
 ```
 
 Refer to the [README at davidmerfield/randomColor](https://github.com/davidmerfield/randomColor/blob/4b6b10f1f012d64987b1853a250f3124470bcb06/README.md) for full usage details.
