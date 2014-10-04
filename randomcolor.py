@@ -87,24 +87,23 @@ class RandomColor(object):
         return self.random_within([bMin, bMax])
 
     def set_format(self, hsv, format_):
-
-            if format_ == 'hsvArray':
-                return hsv
-            elif format_ == 'hsv':
-                return self.color_string('hsv', hsv)
-            elif format_ == 'rgbArray':
-                return self.hsv_to_rgb(hsv)
-            elif format_ == 'rgb':
-                return self.color_string('rgb', self.hsv_to_rgb(hsv))
-            else:
+        if format_ == 'hsvArray':
+            return hsv
+        elif format_ == 'hsv':
+            return self.color_string('hsv', hsv)
+        elif format_ == 'rgbArray':
+            return self.hsv_to_rgb(hsv)
+        elif format_ == 'rgb':
+            return self.color_string('rgb', self.hsv_to_rgb(hsv))
+        elif format_ == 'hex':
+            return self.hsv_to_hex(hsv)
+        else:
                 return self.hsv_to_hex(hsv)
 
     def get_minimum_brightness(self, H, S):
-
         lower_bounds = self.get_color_info(H)['lower_bounds']
 
-        for i in range(len(lower_bounds)):
-
+        for i in range(len(lower_bounds) - 1):
             s1 = lower_bounds[i][0]
             v1 = lower_bounds[i][1]
 
