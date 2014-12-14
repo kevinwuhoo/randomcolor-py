@@ -1,7 +1,7 @@
 randomcolor
 ===========
 
-A port of [David Merfield's randomColor](https://github.com/davidmerfield/randomColor)  ([currently davidmerfield/randomColor@4b6b10f](https://github.com/davidmerfield/randomColor/commit/4b6b10f1f012d64987b1853a250f3124470bcb06)) to python.
+A port of [David Merfield's randomColor](https://github.com/davidmerfield/randomColor)  ([currently davidmerfield/randomColor@58f5a89](https://github.com/davidmerfield/randomColor/commit/58f5a8963ae41bd9c1ca567921df3cf6be48e374)) to python.
 
 Usage
 -----
@@ -18,7 +18,7 @@ Generating 3 random blue colors:
 print rand_color.generate(hue="blue", count=3)
 ```
 
-Refer to the [README at davidmerfield/randomColor](https://github.com/davidmerfield/randomColor/blob/4b6b10f1f012d64987b1853a250f3124470bcb06/README.md) for full usage details.
+Refer to the [tests for examples](https://github.com/kevinwuhoo/randomcolor-py/blob/master/test_randomcolor.py) and [README at davidmerfield/randomColor](https://github.com/davidmerfield/randomColor/blob/58f5a8963ae41bd9c1ca567921df3cf6be48e374/README.md) for full usage details.
 
 Tests
 -----
