@@ -3,13 +3,21 @@
 import colorsys
 import random
 import yaml
+import sys
 
 
 class RandomColor(object):
 
-    def __init__(self):
+    def __init__(self, seed=None):
         # Load color dictionary and populate the color dictionary
         self.colormap = yaml.load(open('lib/colormap.yaml'))
+
+        if seed:
+            self.seed = seed
+        else:
+            self.seed = random.randint(0, sys.maxint)
+
+        self.random = random.Random(self.seed)
 
         for color_name, color_attrs in self.colormap.items():
             lower_bounds = color_attrs['lower_bounds']
@@ -154,9 +162,8 @@ class RandomColor(object):
         # this should probably raise an exception
         return 'Color not found'
 
-    @classmethod
-    def random_within(cls, r):
-        return random.randint(r[0], r[1])
+    def random_within(self, r):
+        return self.random.randint(r[0], r[1])
 
     @classmethod
     def hsv_to_rgb(cls, hsv):

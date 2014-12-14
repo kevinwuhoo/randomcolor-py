@@ -10,8 +10,10 @@ def main():
     formats = ['rgb', 'hex']
 
     colors = []
-    rand_color = randomcolor.RandomColor()
-    rand_int = lambda: random.randint(4, 10)
+    rand_color = randomcolor.RandomColor(42)
+
+    rand = random.Random(42)
+    rand_int = lambda: rand.randint(4, 10)
 
     colors.append(('one random color', rand_color.generate()))
 
