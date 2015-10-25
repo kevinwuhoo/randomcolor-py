@@ -2,7 +2,7 @@
 
 import colorsys
 import random
-import yaml
+import json
 import sys
 
 
@@ -10,7 +10,7 @@ class RandomColor(object):
 
     def __init__(self, seed=None):
         # Load color dictionary and populate the color dictionary
-        self.colormap = yaml.load(open('lib/colormap.yaml'))
+        self.colormap = json.load(open('lib/colormap.json'))
 
         if seed:
             self.seed = seed
