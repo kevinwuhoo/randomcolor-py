@@ -1,5 +1,6 @@
 #!/usr/env/bin python
 
+import os
 import colorsys
 import random
 import json
@@ -10,12 +11,9 @@ class RandomColor(object):
 
     def __init__(self, seed=None):
         # Load color dictionary and populate the color dictionary
-        self.colormap = json.load(open('lib/colormap.json'))
+        self.colormap = json.load(open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')))
 
-        if seed:
-            self.seed = seed
-        else:
-            self.seed = random.randint(0, sys.maxint)
+        self.seed = seed if seed else random.randint(0, sys.maxint)
 
         self.random = random.Random(self.seed)
 
@@ -54,7 +52,7 @@ class RandomColor(object):
         # Instead of storing red as two seperate ranges,
         # we group them, using negative numbers
         if (hue < 0):
-            hue = 360 + hue
+            hue += 360
 
         return hue
 
@@ -122,8 +120,7 @@ class RandomColor(object):
             s2 = lower_bounds[i + 1][0]
             v2 = lower_bounds[i + 1][1]
 
-            if S >= s1 and S <= s2:
-
+            if s1 <= S <= s2:
                 m = (v2 - v1) / (s2 - s1)
                 b = v1 - m * s1
 
@@ -135,7 +132,7 @@ class RandomColor(object):
         if color_input and color_input.isdigit():
             number = int(color_input)
 
-            if number < 360 and number > 0:
+            if 0 < number < 360:
                 return [number, number]
 
         elif color_input and color_input in self.colormap:
@@ -151,12 +148,11 @@ class RandomColor(object):
 
     def get_color_info(self, hue):
         # Maps red colors to make picking hue easier
-        if hue >= 334 and hue <= 360:
+        if 334 <= hue <= 360:
             hue -= 360
 
         for color_name, color in self.colormap.items():
-            if color['hue_range'] and hue >= color['hue_range'][0] and \
-               hue <= color['hue_range'][1]:
+            if color['hue_range'] and color['hue_range'][0] <= hue <= color['hue_range'][1]:
                 return self.colormap[color_name]
 
         # this should probably raise an exception
@@ -168,10 +164,8 @@ class RandomColor(object):
     @classmethod
     def hsv_to_rgb(cls, hsv):
         h, s, v = hsv
-        if h == 0:
-            h = 1
-        if h == 360:
-            h = 359
+        h = 1 if h == 0 else h
+        h = 359 if h == 360 else h
 
         h = float(h)/360
         s = float(s)/100
