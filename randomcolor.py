@@ -13,7 +13,7 @@ class RandomColor(object):
         # Load color dictionary and populate the color dictionary
         self.colormap = json.load(open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')))
 
-        self.seed = seed if seed else random.randint(0, sys.maxint)
+        self.seed = seed if seed else random.randint(0, sys.maxsize)
 
         self.random = random.Random(self.seed)
 
@@ -159,7 +159,7 @@ class RandomColor(object):
         return 'Color not found'
 
     def random_within(self, r):
-        return self.random.randint(r[0], r[1])
+        return self.random.randint(int(r[0]), int(r[1]))
 
     @classmethod
     def hsv_to_rgb(cls, hsv):
