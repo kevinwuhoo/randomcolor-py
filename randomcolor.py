@@ -1,5 +1,6 @@
 #!/usr/env/bin python
 
+import os
 import colorsys
 import random
 import json
@@ -10,25 +11,22 @@ class RandomColor(object):
 
     def __init__(self, seed=None):
         # Load color dictionary and populate the color dictionary
-        self.colormap = json.load(open('lib/colormap.json'))
+        self.colormap = json.load(open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')))
 
-        if seed:
-            self.seed = seed
-        else:
-            self.seed = random.randint(0, sys.maxint)
+        self.seed = seed if seed else random.randint(0, sys.maxsize)
 
         self.random = random.Random(self.seed)
 
         for color_name, color_attrs in self.colormap.items():
             lower_bounds = color_attrs['lower_bounds']
-            sMin = lower_bounds[0][0]
-            sMax = lower_bounds[len(lower_bounds) - 1][0]
+            s_min = lower_bounds[0][0]
+            s_max = lower_bounds[len(lower_bounds) - 1][0]
 
-            bMin = lower_bounds[len(lower_bounds) - 1][1]
-            bMax = lower_bounds[0][1]
+            b_min = lower_bounds[len(lower_bounds) - 1][1]
+            b_max = lower_bounds[0][1]
 
-            self.colormap[color_name]['saturation_range'] = [sMin, sMax]
-            self.colormap[color_name]['brightness_range'] = [bMin, bMax]
+            self.colormap[color_name]['saturation_range'] = [s_min, s_max]
+            self.colormap[color_name]['brightness_range'] = [b_min, b_max]
 
     def generate(self, hue=None, luminosity=None, count=1, format_='hex'):
         colors = []
@@ -54,7 +52,7 @@ class RandomColor(object):
         # Instead of storing red as two seperate ranges,
         # we group them, using negative numbers
         if (hue < 0):
-            hue = 360 + hue
+            hue += 360
 
         return hue
 
@@ -68,31 +66,31 @@ class RandomColor(object):
 
         saturation_range = self.get_saturation_range(hue)
 
-        sMin = saturation_range[0]
-        sMax = saturation_range[1]
+        s_min = saturation_range[0]
+        s_max = saturation_range[1]
 
         if luminosity == 'bright':
-            sMin = 55
+            s_min = 55
         elif luminosity == 'dark':
-            sMin = sMax - 10
+            s_min = s_max - 10
         elif luminosity == 'light':
-            sMax = 55
+            s_max = 55
 
-        return self.random_within([sMin, sMax])
+        return self.random_within([s_min, s_max])
 
     def pick_brightness(self, H, S, luminosity):
-        bMin = self.get_minimum_brightness(H, S)
-        bMax = 100
+        b_min = self.get_minimum_brightness(H, S)
+        b_max = 100
 
         if luminosity == 'dark':
-            bMax = bMin + 20
+            b_max = b_min + 20
         elif luminosity == 'light':
-            bMin = (bMax + bMin) / 2
+            b_min = (b_max + b_min) / 2
         elif luminosity == 'random':
-            bMin = 0
-            bMax = 100
+            b_min = 0
+            b_max = 100
 
-        return self.random_within([bMin, bMax])
+        return self.random_within([b_min, b_max])
 
     def set_format(self, hsv, format_):
         if 'hsv' in format_:
@@ -122,8 +120,7 @@ class RandomColor(object):
             s2 = lower_bounds[i + 1][0]
             v2 = lower_bounds[i + 1][1]
 
-            if S >= s1 and S <= s2:
-
+            if s1 <= S <= s2:
                 m = (v2 - v1) / (s2 - s1)
                 b = v1 - m * s1
 
@@ -135,7 +132,7 @@ class RandomColor(object):
         if color_input and color_input.isdigit():
             number = int(color_input)
 
-            if number < 360 and number > 0:
+            if 0 < number < 360:
                 return [number, number]
 
         elif color_input and color_input in self.colormap:
@@ -151,27 +148,24 @@ class RandomColor(object):
 
     def get_color_info(self, hue):
         # Maps red colors to make picking hue easier
-        if hue >= 334 and hue <= 360:
+        if 334 <= hue <= 360:
             hue -= 360
 
         for color_name, color in self.colormap.items():
-            if color['hue_range'] and hue >= color['hue_range'][0] and \
-               hue <= color['hue_range'][1]:
+            if color['hue_range'] and color['hue_range'][0] <= hue <= color['hue_range'][1]:
                 return self.colormap[color_name]
 
         # this should probably raise an exception
         return 'Color not found'
 
     def random_within(self, r):
-        return self.random.randint(r[0], r[1])
+        return self.random.randint(int(r[0]), int(r[1]))
 
     @classmethod
     def hsv_to_rgb(cls, hsv):
         h, s, v = hsv
-        if h == 0:
-            h = 1
-        if h == 360:
-            h = 359
+        h = 1 if h == 0 else h
+        h = 359 if h == 360 else h
 
         h = float(h)/360
         s = float(s)/100
