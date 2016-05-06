@@ -13,7 +13,7 @@ setup(
     author='Kevin Wu',
     author_email='me@kevinformatics.com',
     url='https://github.com/kevinwuhoo/randomcolor-py',
-    packages=["."],
+    packages=['randomcolor'],
     include_package_data=True,
     install_requires=[],
 )
