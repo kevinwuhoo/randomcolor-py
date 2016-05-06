@@ -14,6 +14,7 @@ setup(
     author_email='me@kevinformatics.com',
     url='https://github.com/kevinwuhoo/randomcolor-py',
     packages=['randomcolor'],
+    package_data={'randomcolor': ['lib/colormap.json'],},
     include_package_data=True,
     install_requires=[],
 )
