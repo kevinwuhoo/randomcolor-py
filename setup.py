@@ -16,4 +16,5 @@ setup(
     packages=['randomcolor'],
     package_data={'randomcolor': ['lib/colormap.json']},
     install_requires=[],
+    test_suite="tests",
 )

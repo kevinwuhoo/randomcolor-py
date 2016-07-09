@@ -14,7 +14,6 @@ class RandomColor(object):
         self.colormap = json.load(open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')))
 
         self.seed = seed if seed else random.randint(0, sys.maxsize)
-
         self.random = random.Random(self.seed)
 
         for color_name, color_attrs in self.colormap.items():
