@@ -6,7 +6,7 @@ import os
 
 setup(
     name='randomcolor',
-    version='0.4.4.3',
+    version='0.4.4.4',
     description='For generating attractive random colors',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
     keywords='python random color generator',
