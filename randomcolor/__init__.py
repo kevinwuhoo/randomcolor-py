@@ -11,7 +11,8 @@ class RandomColor(object):
 
     def __init__(self, seed=None):
         # Load color dictionary and populate the color dictionary
-        self.colormap = json.load(open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')))
+        with open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')) as fh:
+            self.colormap = json.load(fh)
 
         self.seed = seed if seed else random.randint(0, sys.maxsize)
         self.random = random.Random(self.seed)
