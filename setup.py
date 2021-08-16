@@ -6,8 +6,9 @@ import os
 
 setup(
     name='randomcolor',
-    version='0.4.4.5',
+    version='0.4.4.6',
     description='For generating attractive random colors',
+    long_description_content_type="text/markdown",
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
     keywords='python random color generator',
     author='Kevin Wu',

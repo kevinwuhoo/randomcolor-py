@@ -1,7 +1,7 @@
 randomcolor [![Build Status](https://travis-ci.org/kevinwuhoo/randomcolor-py.svg?branch=master)](https://travis-ci.org/kevinwuhoo/randomcolor-py)
 ===========
 
-A port of [David Merfield's randomColor](https://github.com/davidmerfield/randomColor)  ([currently davidmerfield/randomColor@0.4.4](https://github.com/davidmerfield/randomColor/releases/tag/0.4.4)) to python. Tested against python versions 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, pypy, and pypy3.
+A port of [David Merfield's randomColor](https://github.com/davidmerfield/randomColor)  ([currently davidmerfield/randomColor@0.4.4](https://github.com/davidmerfield/randomColor/releases/tag/0.4.4)) to python. Tested against python versions 3.6, 3.7, 3.8, 3.9, pypy, and pypy3.
 
 Usage
 -----
