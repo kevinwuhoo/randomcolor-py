@@ -12,8 +12,7 @@ class RandomColor(object):
         with open(os.path.join(os.path.dirname(__file__), 'lib/colormap.json')) as fh:
             self.colormap = json.load(fh)
 
-        self.seed = seed if seed else random.randint(0, sys.maxsize)
-        self.random = random.Random(self.seed)
+        self.random = random.Random(seed)
 
         for color_name, color_attrs in self.colormap.items():
             lower_bounds = color_attrs['lower_bounds']
