@@ -148,7 +148,11 @@ class RandomColor(object):
         if 334 <= hue <= 360:
             hue -= 360
 
-        for color_name, color in self.colormap.items():
+        color_names = list(self.colormap.keys())
+        color_names.sort()
+
+        for color_name in color_names:
+            color = self.colormap[color_name]
             if color['hue_range'] and color['hue_range'][0] <= hue <= color['hue_range'][1]:
                 return self.colormap[color_name]
 
