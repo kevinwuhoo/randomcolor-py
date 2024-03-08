@@ -13,8 +13,10 @@ class RandomColor(object):
             self.colormap = json.load(fh)
 
         self.random = random.Random(seed)
+        sorted_color_names = sorted(self.colormap.keys())
 
-        for color_name, color_attrs in self.colormap.items():
+        for color_name in sorted_color_names:
+            color_attrs = self.colormap[color_name]
             lower_bounds = color_attrs['lower_bounds']
             s_min = lower_bounds[0][0]
             s_max = lower_bounds[len(lower_bounds) - 1][0]
